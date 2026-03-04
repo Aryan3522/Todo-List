@@ -1,0 +1,82 @@
+/* Tailwind v4 setup */
+@import "tailwindcss";
+
+/* Root variables (LIGHT THEME ONLY) */
+
+:root {
+  --max-width: 1200px;
+  --border-radius: 12px;
+
+  --font-main: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Text color */
+  --foreground-rgb: 33, 37, 41;
+
+  /* Background */
+  --background-start-rgb: 248, 249, 250;
+  --background-end-rgb: 255, 255, 255;
+
+  /* Cards */
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb; /* soft gray instead of black */
+}
+
+/* Global reset */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Page layout */
+
+html,
+body {
+  width: 100%;
+  min-height: 100vh;
+  font-family: var(--font-main);
+}
+
+/* Background */
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(13, 110, 253, 0.08),
+      transparent 70%
+    ),
+    linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    );
+}
+
+/* Links */
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Buttons */
+
+button {
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+/* Disabled button styles */
+
+button:disabled {
+  background-color: #e5e7eb; /* gray-200 */
+  color: #9ca3af; /* gray-400 */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+button:disabled:hover {
+  background-color: #e5e7eb;
+}

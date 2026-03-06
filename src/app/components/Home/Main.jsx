@@ -3,6 +3,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MonthlyContext } from "@/app/context/monthlyContext";
 import CheckIcon from '@mui/icons-material/Check';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const columnStyles = {
   todo: "bg-[#f6eddc]",
@@ -77,7 +78,7 @@ const Main = () => {
       <div className="flex justify-between items-start">
         <div className="flex gap-2 justify-center items-center">
           <h4
-            className={`text-sm font-semibold ${task.completed ? "line-through text-gray-400" : "text-gray-800"
+            className={`text-md font-semibold ${task.completed ? "line-through text-gray-400" : "text-gray-800"
               }`}
           >
             {task.title}
@@ -89,7 +90,7 @@ const Main = () => {
           )}
         </div>
 
-        <span className="text-[10px] text-gray-100 bg-green-800 px-2.5 py-1 rounded-full">
+        <span className="text-[14px] text-green-800">
           {new Date(task.year, task.month - 1, task.date).toLocaleDateString("en-US", {
             day: "numeric",
             month: "short",
@@ -105,7 +106,7 @@ const Main = () => {
           {type === "todo" && (
             <button
               onClick={() => startTask(task)}
-              className="px-3 py-1 text-xs font-medium rounded-md bg-yellow-400 text-white hover:bg-yellow-500"
+              className="px-3 py-1 text-xs font-medium rounded-md bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
             >
               Start
             </button>
@@ -114,12 +115,12 @@ const Main = () => {
           {type === "progress" && (
             <div className="flex gap-2 flex-wrap">
               <button onClick={() => moveToTodo(task)}
-                className="px-3 py-1 text-xs font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600">
+                className="px-3 py-1 text-xs font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100">
                 Later?
               </button>
               <button
                 onClick={() => completeTask(task)}
-                className="px-3 py-1 text-xs font-medium rounded-md bg-green-500 text-white hover:bg-green-600"
+                className="px-3 py-1 text-xs font-medium rounded-md bg-green-50 text-green-600 hover:bg-green-100"
               >
                 Complete
               </button>
@@ -130,9 +131,9 @@ const Main = () => {
 
         <button
           onClick={() => deleteTask(task)}
-          className="px-3 py-1 text-xs font-medium rounded-md bg-red-500 text-white hover:bg-red-600"
+          className="p-1 text-xs font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100"
         >
-          Delete
+          <DeleteOutlineIcon fontSize="small" />
         </button>
 
       </div>

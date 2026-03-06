@@ -2,6 +2,7 @@
 
 import { MonthlyContext } from "@/app/context/monthlyContext";
 import React, { useContext } from "react";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const monthColors = {
   1: { bg: "#F9F3E6", text: "#6B4F2A" }, // Jan - beige
@@ -124,9 +125,9 @@ export const Cards = () => {
 
                   <button
                     onClick={() => deleteHandler(i + 1, ind)}
-                    className="text-xs px-3 py-1 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
+                    className="text-xs p-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition"
                   >
-                    Delete
+                    <DeleteOutlineIcon fontSize="small" />
                   </button>
 
                 </div>

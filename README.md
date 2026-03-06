@@ -21,6 +21,23 @@ This repository is intentionally structured to encourage **real-world collaborat
 
 ---
 
+## 📸 UI Preview
+
+### Home Page
+![Home Page](./assets/home_page.png)
+
+### Add Monthly Task
+![Add Monthly Task](./assets/home_page_form.png)
+
+### Add Daily Task
+![Add Daily Task](./assets/daily_task_form.png)
+
+### Daily Task Page
+![Daily Task Page](./assets/daily_task_page.png)
+
+### Monthly Task Page
+![Monthly Task Page](./assets/monthly_task_page.png)
+
 # 📦 Installation & Local Setup
 
 Follow these steps to run the project locally.

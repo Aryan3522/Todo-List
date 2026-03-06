@@ -25,9 +25,7 @@ const Header = ({ sideBarOpen }) => {
   });
 
   const isMonthly =
-    pathname === "/" || pathname.startsWith("/planner/monthly");
-
-  const isDaily = pathname.startsWith("/planner/daily");
+    pathname === "/" || pathname.startsWith("/monthly");
 
   const handleSubmit = () => {
     if (!formData.title || !formData.date) return;

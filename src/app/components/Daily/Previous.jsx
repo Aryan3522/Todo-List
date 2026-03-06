@@ -2,6 +2,7 @@
 
 import { DailyContext } from "@/app/context/context";
 import React, { useContext, useState } from "react";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 export const Previous = () => {
   const { toDoArr, dispatch } = useContext(DailyContext);
@@ -70,13 +71,19 @@ export const Previous = () => {
 
                   <div className="flex items-center gap-3">
 
-                    <input
+                    {/* <input
                       type="checkbox"
                       className="w-4 h-4 accent-gray-600 cursor-pointer"
                       checked={ele.completed === true}
                       onChange={() => {
                         TaskCompleted(i)
                       }}
+                    /> */}
+                    <input
+                      type="checkbox"
+                      checked={ele.completed === true}
+                      onChange={() => TaskCompleted(i)}
+                      className="w-4 h-4 accent-green-500 cursor-pointer"
                     />
 
                     <span className={`text-sm font-medium ${ele.completed
@@ -150,10 +157,10 @@ export const Previous = () => {
 
                   </div>
                   <button
-                    className="text-xs px-3 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition"
+                    className="text-xs p-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition"
                     onClick={() => DeleteTask(i)}
                   >
-                    Delete
+                    <DeleteOutlineIcon fontSize="small" />
                   </button>
 
                 </div>

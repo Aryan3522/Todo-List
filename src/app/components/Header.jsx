@@ -137,7 +137,7 @@ const Header = ({ sideBarOpen }) => {
 
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-gray-800">
-                {isMonthly ? "Add Monthly Plan" : "Add Daily Task"}
+                {isMonthly ? "Add Monthly Task" : "Add Daily Task"}
               </h2>
 
               <button
@@ -187,11 +187,11 @@ const Header = ({ sideBarOpen }) => {
                 />
 
                 <button
-                  disabled={!formData.title}
+                  disabled={!(formData.title && formData.date)}
                   onClick={handleSubmit}
                   className="w-full bg-green-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition"
                 >
-                  Add Plan
+                  Add Task
                 </button>
 
               </div>

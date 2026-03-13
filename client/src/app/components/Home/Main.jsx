@@ -2,6 +2,7 @@
 
 import React, { useContext, useEffect, useState } from "react";
 import { MonthlyContext } from "@/app/context/monthlyContext";
+import { DailyContext } from "@/app/context/context";
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
@@ -13,6 +14,7 @@ const columnStyles = {
 
 const Main = () => {
   const { Planning, dispatch } = useContext(MonthlyContext);
+  const { searchQuery } = useContext(DailyContext);
   const [currentMonth, setCurrentMonth] = useState(null);
 
   useEffect(() => {
@@ -32,6 +34,11 @@ const Main = () => {
 
   upcomingMonths.forEach((month) => {
     Planning[month].forEach((task, index) => {
+
+      if (searchQuery && !task.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return; 
+      }
+    
       const item = { ...task, month, index };
 
       if (task.completed) completed.push(item);

@@ -1,5 +1,5 @@
 "use client";
-const { createContext, useReducer } = require("react");
+const { createContext, useReducer, useState } = require("react");
 
 let toDoArr = {};
 if (typeof window !== "undefined") {
@@ -184,8 +184,9 @@ function reducer(state, action) {
 
 export const Provider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, toDoArr);
+  const [searchQuery, setSearchQuery] = useState("");
   return (
-    <DailyContext.Provider value={{ toDoArr: state, dispatch }}>
+    <DailyContext.Provider value={{ toDoArr: state, dispatch, searchQuery, setSearchQuery }}>
       {children}
     </DailyContext.Provider>
   );

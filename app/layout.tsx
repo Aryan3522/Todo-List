@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Provider } from "./context/context";
@@ -5,19 +6,23 @@ import { MonthlyProvider } from "./context/monthlyContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
+// ✅ Typed metadata
+export const metadata: Metadata = {
   title: "TODO LIST",
-  description: "A todo application to manage daily an monthly todo's",
+  description: "A todo application to manage daily and monthly todos",
 };
 
-export default function RootLayout({ children }) {
+// ✅ Props typing
+type RootLayoutProps = {
+  children: React.ReactNode;
+};
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
         <MonthlyProvider>
-          <Provider>
-            {children}
-            </Provider>
+          <Provider>{children}</Provider>
         </MonthlyProvider>
       </body>
     </html>

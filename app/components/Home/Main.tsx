@@ -1,8 +1,9 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
-import CheckIcon from '@mui/icons-material/Check';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { MonthlyContext } from "../../context/monthlyContext";
+
+import { useContext, useEffect, useState } from "react";
+import CheckIcon from "@mui/icons-material/Check";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { MonthlyContext, MonthlyTask } from "../../context/monthlyContext";
 
 const columnStyles = {
   todo: "bg-[#f6eddc]",
@@ -10,9 +11,22 @@ const columnStyles = {
   completed: "bg-[#f8e7ef]",
 };
 
-const Main = () => {
-  const { Planning, dispatch } = useContext(MonthlyContext);
-  const [currentMonth, setCurrentMonth] = useState(null);
+// ✅ extended type for UI usage
+type TaskWithMeta = MonthlyTask & {
+  month: number;
+  index: number;
+};
+
+export default function Main() {
+  const ctx = useContext(MonthlyContext);
+
+  // ✅ FIX 1: context safety
+  if (!ctx) return null;
+
+  const { Planning, dispatch } = ctx;
+
+  // ✅ FIX 2: proper typing
+  const [currentMonth, setCurrentMonth] = useState<number | null>(null);
 
   useEffect(() => {
     setCurrentMonth(new Date().getMonth() + 1);
@@ -25,13 +39,14 @@ const Main = () => {
     .filter((m) => m >= currentMonth && Planning[m]?.length)
     .sort((a, b) => a - b);
 
-  const todos = [];
-  const progress = [];
-  const completed = [];
+  // ✅ FIX 3: typed arrays
+  const todos: TaskWithMeta[] = [];
+  const progress: TaskWithMeta[] = [];
+  const completed: TaskWithMeta[] = [];
 
   upcomingMonths.forEach((month) => {
     Planning[month].forEach((task, index) => {
-      const item = { ...task, month, index };
+      const item: TaskWithMeta = { ...task, month, index };
 
       if (task.completed) completed.push(item);
       else if (task.inProgress) progress.push(item);
@@ -39,27 +54,30 @@ const Main = () => {
     });
   });
 
-  const moveToTodo = (task) => {
+  // ---------------- ACTIONS ----------------
+
+  const moveToTodo = (task: TaskWithMeta) => {
     dispatch({
       type: "MOVE_TO_TODO",
       payload: { month: task.month, index: task.index },
-    })
-  }
-  const startTask = (task) => {
+    });
+  };
+
+  const startTask = (task: TaskWithMeta) => {
     dispatch({
       type: "TASK_PROGRESS",
       payload: { month: task.month, index: task.index },
     });
   };
 
-  const completeTask = (task) => {
+  const completeTask = (task: TaskWithMeta) => {
     dispatch({
       type: "TASK_COMPLETED",
       payload: { month: task.month, index: task.index },
     });
   };
 
-  const deleteTask = (task) => {
+  const deleteTask = (task: TaskWithMeta) => {
     dispatch({
       type: "DELETE_PLAN",
       payload: {
@@ -69,28 +87,39 @@ const Main = () => {
     });
   };
 
-  const renderCard = (task, type) => (
+  // ---------------- CARD ----------------
+
+  const renderCard = (
+    task: TaskWithMeta,
+    type: "todo" | "progress" | "completed"
+  ) => (
     <div
       key={`${task.month}-${task.index}`}
       className="rounded-xl shadow-sm border border-gray-100 min-w-52 p-4 flex flex-col gap-3 hover:shadow-md transition"
     >
       <div className="flex justify-between items-start">
-        <div className="flex gap-2 justify-center items-center">
+        <div className="flex gap-2 items-center">
           <h4
-            className={`text-md font-semibold ${task.completed ? "line-through text-gray-400" : "text-gray-800"
-              }`}
+            className={`text-md font-semibold ${
+              task.completed
+                ? "line-through text-gray-400"
+                : "text-gray-800"
+            }`}
           >
             {task.title}
           </h4>
+
           {type === "completed" && (
-            <div className="flex justify-center align-middle items-center">
-              <CheckIcon className="text-green-600" />
-            </div>
+            <CheckIcon className="text-green-600" />
           )}
         </div>
 
         <span className="text-[14px] text-green-800">
-          {new Date(task.year, task.month - 1, task.date).toLocaleDateString("en-US", {
+          {new Date(
+            task.year,
+            task.month - 1,
+            task.date
+          ).toLocaleDateString("en-US", {
             day: "numeric",
             month: "short",
             year: "numeric",
@@ -99,13 +128,11 @@ const Main = () => {
       </div>
 
       <div className="flex justify-between items-center">
-
         <div className="flex gap-2">
-
           {type === "todo" && (
             <button
               onClick={() => startTask(task)}
-              className="px-3 py-1 text-xs font-medium rounded-md bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
+              className="px-3 py-1 text-xs rounded-md bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
             >
               Start
             </button>
@@ -113,41 +140,39 @@ const Main = () => {
 
           {type === "progress" && (
             <div className="flex gap-2 flex-wrap">
-              <button onClick={() => moveToTodo(task)}
-                className="px-3 py-1 text-xs font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100">
+              <button
+                onClick={() => moveToTodo(task)}
+                className="px-3 py-1 text-xs rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100"
+              >
                 Later?
               </button>
+
               <button
                 onClick={() => completeTask(task)}
-                className="px-3 py-1 text-xs font-medium rounded-md bg-green-50 text-green-600 hover:bg-green-100"
+                className="px-3 py-1 text-xs rounded-md bg-green-50 text-green-600 hover:bg-green-100"
               >
                 Complete
               </button>
             </div>
           )}
-
         </div>
 
         <button
           onClick={() => deleteTask(task)}
-          className="p-1 text-xs font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100"
+          className="p-1 text-xs rounded-md bg-red-50 text-red-600 hover:bg-red-100"
         >
           <DeleteOutlineIcon fontSize="small" />
         </button>
-
       </div>
     </div>
   );
 
+  // ---------------- UI ----------------
+
   return (
     <div className="w-full py-4">
-
-      {/* Board Container */}
-
       <div className="w-full flex flex-wrap gap-6">
-
         {/* TODO */}
-
         <div className={`flex-1 rounded-2xl p-6 ${columnStyles.todo}`}>
           <h3 className="text-sm font-semibold text-yellow-700 mb-5">
             To Do
@@ -160,8 +185,7 @@ const Main = () => {
           </div>
         </div>
 
-        {/* IN PROGRESS */}
-
+        {/* PROGRESS */}
         <div className={`flex-1 rounded-2xl p-6 ${columnStyles.progress}`}>
           <h3 className="text-sm font-semibold text-indigo-600 mb-5">
             In Progress
@@ -175,7 +199,6 @@ const Main = () => {
         </div>
 
         {/* COMPLETED */}
-
         <div className={`flex-1 rounded-2xl p-6 ${columnStyles.completed}`}>
           <h3 className="text-sm font-semibold text-pink-600 mb-5">
             Completed
@@ -187,10 +210,7 @@ const Main = () => {
               : <p className="text-xs text-gray-500">No tasks</p>}
           </div>
         </div>
-
       </div>
     </div>
   );
-};
-
-export default Main;
+}

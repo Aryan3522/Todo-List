@@ -15,18 +15,34 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    // ✅ FIX: required for JSX support
+    "jsx": "react-jsx",
+    // ✅ OPTIONAL but recommended (fixes JSX namespace issues)
+    "types": [
+      "node",
+      "react",
+      "react-dom"
+    ],
+    // ✅ alias support
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "*"
+      ]
+    },
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

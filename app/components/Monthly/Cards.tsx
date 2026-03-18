@@ -1,37 +1,47 @@
 "use client";
-import React, { useContext } from "react";
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+
+import { useContext } from "react";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { MonthlyContext } from "../../context/monthlyContext";
 
-const monthColors = {
-  1: { bg: "#F9F3E6", text: "#6B4F2A" }, // Jan - beige
-  2: { bg: "#EEF1FF", text: "#3730A3" }, // Feb - soft blue
-  3: { bg: "#ECFDF5", text: "#047857" }, // Mar - mint green
-  4: { bg: "#FDF2F8", text: "#BE185D" }, // Apr - pink
-  5: { bg: "#FFF7ED", text: "#9A3412" }, // May - peach
-  6: { bg: "#F0F9FF", text: "#075985" }, // Jun - sky
-  7: { bg: "#F5F3FF", text: "#5B21B6" }, // Jul - purple
-  8: { bg: "#F0FDF4", text: "#166534" }, // Aug - green
-  9: { bg: "#FEFCE8", text: "#854D0E" }, // Sep - yellow
-  10: { bg: "#FFF1F2", text: "#9F1239" }, // Oct - rose
-  11: { bg: "#F8FAFC", text: "#334155" }, // Nov - slate
-  12: { bg: "#FDF4FF", text: "#86198F" }, // Dec - violet
+// Month theme type
+type MonthTheme = {
+  bg: string;
+  text: string;
 };
-export const Cards = () => {
-  const { Planning, months, dispatch } = useContext(MonthlyContext);
 
-  const CompleteTask = () => {
-    dispatch({
-      type: "TASK_COMPLETED",
-      payload: { monthInd, taskInd },
-    })
+// Typed month colors
+const monthColors: Record<number, MonthTheme> = {
+  1: { bg: "#F9F3E6", text: "#6B4F2A" },
+  2: { bg: "#EEF1FF", text: "#3730A3" },
+  3: { bg: "#ECFDF5", text: "#047857" },
+  4: { bg: "#FDF2F8", text: "#BE185D" },
+  5: { bg: "#FFF7ED", text: "#9A3412" },
+  6: { bg: "#F0F9FF", text: "#075985" },
+  7: { bg: "#F5F3FF", text: "#5B21B6" },
+  8: { bg: "#F0FDF4", text: "#166534" },
+  9: { bg: "#FEFCE8", text: "#854D0E" },
+  10: { bg: "#FFF1F2", text: "#9F1239" },
+  11: { bg: "#F8FAFC", text: "#334155" },
+  12: { bg: "#FDF4FF", text: "#86198F" },
+};
+
+export function Cards() {
+  const ctx = useContext(MonthlyContext);
+
+  if (!ctx) {
+    throw new Error("MonthlyContext not found");
   }
-  const deleteHandler = (monthInd, taskInd) => {
+
+  const { Planning, months, dispatch } = ctx;
+
+  // ✅ delete handler typed
+  const deleteHandler = (monthInd: number, taskInd: number) => {
     dispatch({
       type: "DELETE_PLAN",
       payload: { monthInd, taskInd },
     });
-  }
+  };
 
   const hasPlans = Object.values(Planning || {}).some(
     (month) => month && month.length > 0
@@ -47,37 +57,37 @@ export const Cards = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-
       {months.map((month, i) => {
-        if (!Planning[i + 1]) return null;
-        const theme = monthColors[i + 1];
+        const monthIndex = i + 1;
+
+        if (!Planning[monthIndex]) return null;
+
+        const theme = monthColors[monthIndex];
+
         return (
-          <div
-            key={i}
-            className="flex flex-col overflow-hidden"
-          >
-
+          <div key={monthIndex} className="flex flex-col overflow-hidden">
             {/* Month Header */}
-
-            <div className="rounded-t-md px-4 py-3 border-b" style={{ backgroundColor: theme.bg }}>
-              <h3 className="text-sm font-semibold" style={{ color: theme.text }}>
+            <div
+              className="rounded-t-md px-4 py-3 border-b"
+              style={{ backgroundColor: theme.bg }}
+            >
+              <h3
+                className="text-sm font-semibold"
+                style={{ color: theme.text }}
+              >
                 {month}
               </h3>
             </div>
 
             {/* Task List */}
-
             <div className="flex flex-col divide-y">
-
-              {Planning[i + 1].map((plan, ind) => (
+              {Planning[monthIndex].map((plan, ind) => (
                 <div
                   key={ind}
                   className="flex justify-between rounded-b-md bg-white items-center px-4 py-3 hover:bg-gray-50 transition"
                 >
                   {/* Task Info */}
-
                   <div className="flex items-center gap-3">
-
                     <input
                       type="checkbox"
                       checked={plan.completed === true}
@@ -85,7 +95,7 @@ export const Cards = () => {
                         dispatch({
                           type: "TASK_COMPLETED",
                           payload: {
-                            month: i + 1,
+                            month: monthIndex,
                             index: ind,
                           },
                         })
@@ -94,50 +104,43 @@ export const Cards = () => {
                     />
 
                     <div className="flex flex-col">
-
                       <span
-                        className={`text-sm font-medium ${plan.completed
-                          ? "line-through text-gray-400"
-                          : "text-gray-800"
-                          }`}
+                        className={`text-sm font-medium ${
+                          plan.completed
+                            ? "line-through text-gray-400"
+                            : "text-gray-800"
+                        }`}
                       >
                         {plan.title}
                       </span>
 
                       <span className="text-xs text-gray-500">
                         {new Date(
-                          plan.year,
-                          plan.month - 1,
-                          plan.date
+                          Number(plan.year),
+                          Number(plan.month) - 1,
+                          Number(plan.date)
                         ).toLocaleDateString("en-US", {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
                         })}
                       </span>
-
                     </div>
-
                   </div>
 
                   {/* Delete Button */}
-
                   <button
-                    onClick={() => deleteHandler(i + 1, ind)}
+                    onClick={() => deleteHandler(monthIndex, ind)}
                     className="text-xs p-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition"
                   >
                     <DeleteOutlineIcon fontSize="small" />
                   </button>
-
                 </div>
               ))}
-
             </div>
-
           </div>
         );
       })}
-
     </div>
   );
-};
+}

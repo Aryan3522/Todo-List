@@ -1,35 +1,63 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# -----------------------------
+# Dependencies
+# -----------------------------
 /node_modules
 /.pnp
 .pnp.js
+.yarn/
 .yarn/install-state.gz
-# testing
-/coverage
-package-lock.json
-# next.js
-/.next/
-/out/
 
-# production
-/build
+# -----------------------------
+# Next.js / Build Output
+# -----------------------------
+.next/
+out/
+build/
+dist/
+.turbo/
 
-# misc
-.DS_Store
-*.pem
-
-# debug
+# -----------------------------
+# Logs
+# -----------------------------
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# local env files
-.env*.local
+# -----------------------------
+# Environment Variables
+# -----------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# vercel
+# -----------------------------
+# System Files
+# -----------------------------
+.DS_Store
+Thumbs.db
+
+# -----------------------------
+# Vercel
+# -----------------------------
 .vercel
 
-# typescript
+# -----------------------------
+# TypeScript
+# -----------------------------
 *.tsbuildinfo
-next-env.d.ts
+
+# ❌ DO NOT IGNORE THIS
+# next-env.d.ts should be committed
+
+# -----------------------------
+# Coverage / Testing
+# -----------------------------
+coverage/
+
+# -----------------------------
+# Misc
+# -----------------------------
+*.pem

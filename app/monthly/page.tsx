@@ -1,20 +1,25 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Main from "../components/Monthly/Main";
 import Navbar from "../components/Navbar";
 
-const page = () => {
-  const [navOpen, setNavOpen] = useState(false);
+export default function Page() {
+  const [navOpen, setNavOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("sidebar");
-    if (stored !== null) setNavOpen(JSON.parse(stored));
+    if (stored !== null) {
+      setNavOpen(stored === "true"); // safer than JSON.parse
+    }
   }, []);
+
   return (
     <div className="flex min-h-screen w-full">
       <Navbar open={navOpen} setOpen={setNavOpen} />
       <Header sideBarOpen={navOpen} />
+
       <main
         className={`transition-all duration-300 pt-18 p-4 ${
           navOpen ? "ml-64" : "ml-20"
@@ -30,10 +35,9 @@ const page = () => {
             Organize your events and plans for upcoming months
           </p>
         </div>
+
         <Main />
       </main>
     </div>
   );
-};
-
-export default page;
+}

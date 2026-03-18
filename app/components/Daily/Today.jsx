@@ -1,6 +1,6 @@
 "use client";
 
-import { DailyContext } from "@/app/context/context";
+import { DailyContext } from "../../context/context";
 import React, { useContext, useState } from "react";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 

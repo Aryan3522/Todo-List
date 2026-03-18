@@ -1,8 +1,7 @@
 "use client";
-
-import { MonthlyContext } from "@/app/context/monthlyContext";
 import React, { useContext } from "react";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { MonthlyContext } from "../../context/monthlyContext";
 
 const monthColors = {
   1: { bg: "#F9F3E6", text: "#6B4F2A" }, // Jan - beige

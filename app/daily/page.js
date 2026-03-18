@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Header from "@/app/components/Header";
-import Main from "@/app/components/daily/Main";
-import Navbar from "@/app/components/Navbar";
+import Header from "../components/Header";
+import Main from "../components/daily/Main";
+import Navbar from "../components/Navbar";
 
 const page = () => {
   const [open, setOpen] = useState(false);

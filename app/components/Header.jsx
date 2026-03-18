@@ -3,9 +3,9 @@
 import React, { useState, useContext } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-import { MonthlyContext } from "@/app/context/monthlyContext";
-import { DailyContext } from "@/app/context/context";
 import { usePathname } from "next/navigation";
+import { MonthlyContext } from "../context/monthlyContext";
+import { DailyContext } from "../context/context";
 
 const Header = ({ sideBarOpen }) => {
   const today = new Date();

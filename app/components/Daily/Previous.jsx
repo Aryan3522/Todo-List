@@ -1,8 +1,7 @@
 "use client";
-
-import { DailyContext } from "@/app/context/context";
 import React, { useContext, useState } from "react";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { DailyContext } from "../../context/context";
 
 export const Previous = () => {
   const { toDoArr, dispatch } = useContext(DailyContext);

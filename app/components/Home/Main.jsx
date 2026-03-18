@@ -1,9 +1,8 @@
 "use client";
-
 import React, { useContext, useEffect, useState } from "react";
-import { MonthlyContext } from "@/app/context/monthlyContext";
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { MonthlyContext } from "../../context/monthlyContext";
 
 const columnStyles = {
   todo: "bg-[#f6eddc]",

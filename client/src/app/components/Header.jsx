@@ -9,11 +9,11 @@ import { usePathname } from "next/navigation";
 
 const Header = ({ sideBarOpen }) => {
   const today = new Date();
-
   const pathname = usePathname();
 
-  const { dispatch: monthlyDispatch } = useContext(MonthlyContext);
-  const { dispatch: dailyDispatch } = useContext(DailyContext);
+  // 🔥 use functions instead of dispatch
+  const { addPlan } = useContext(MonthlyContext);
+  const { addTask } = useContext(DailyContext);
 
   const [open, setOpen] = useState(false);
 
@@ -27,13 +27,14 @@ const Header = ({ sideBarOpen }) => {
   const isMonthly =
     pathname === "/" || pathname.startsWith("/monthly");
 
-  const handleSubmit = () => {
+  // ✅ Monthly submit (API)
+  const handleSubmit = async () => {
     if (!formData.title || !formData.date) return;
 
-    monthlyDispatch({
-      type: "ADD_PLAN",
-      payload: formData,
-    });
+    // month from input is "01-12" → convert to 0–11
+    const monthIndex = parseInt(formData.month) - 1;
+
+    await addPlan(formData.title, monthIndex);
 
     setFormData({
       title: "",
@@ -44,35 +45,13 @@ const Header = ({ sideBarOpen }) => {
 
     setOpen(false);
   };
-  const handleDailySubmit = (time) => {
+
+  // ✅ Daily submit (API)
+  const handleDailySubmit = async (time) => {
     if (!formData.title) return;
-    console.log("fnc called")
 
-    const date = new Date();
+    await addTask(formData.title, time);
 
-    let payload = {
-      title: formData.title,
-      completed: false,
-      day: date.getDate(),
-      month: date.getMonth(),
-      year: date.getFullYear(),
-    };
-
-    if (time === "tomorrow") {
-      date.setDate(date.getDate() + 1);
-
-      payload = {
-        ...payload,
-        day: date.getDate(),
-        month: date.getMonth(),
-        year: date.getFullYear(),
-      };
-    }
-
-    dailyDispatch({
-      type: time === "today" ? "ADD_TASK_TODAY" : "ADD_TASK_TOMORROW",
-      payload,
-    });
     setFormData({
       title: "",
       date: "",
@@ -81,7 +60,6 @@ const Header = ({ sideBarOpen }) => {
     });
 
     setOpen(false);
-
   };
 
   return (
@@ -89,12 +67,11 @@ const Header = ({ sideBarOpen }) => {
       {/* HEADER */}
 
       <header
-        className={`fixed top-0 right-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between min-h-16 px-6 z-40 transition-all duration-300 ${sideBarOpen ? "left-64" : "left-20"
-          }`}
+        className={`fixed top-0 right-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between min-h-16 px-6 z-40 transition-all duration-300 ${
+          sideBarOpen ? "left-64" : "left-20"
+        }`}
       >
-
         {/* LEFT */}
-
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-500">
             {today.toLocaleDateString("en-US", {
@@ -106,9 +83,7 @@ const Header = ({ sideBarOpen }) => {
         </div>
 
         {/* RIGHT */}
-
         <div className="flex items-center gap-3">
-
           <button className="w-9 h-9 flex items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 transition">
             <SearchIcon fontSize="small" />
           </button>
@@ -119,20 +94,16 @@ const Header = ({ sideBarOpen }) => {
           >
             + Add Task
           </button>
-
         </div>
-
       </header>
 
       {/* MODAL */}
 
       {open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
           <div className="bg-white rounded-xl w-full max-w-md shadow-lg p-6">
 
             {/* Header */}
-
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-gray-800">
                 {isMonthly ? "Add Monthly Task" : "Add Daily Task"}
@@ -147,12 +118,10 @@ const Header = ({ sideBarOpen }) => {
             </div>
 
             {/* FORM */}
-
             {isMonthly ? (
               <div className="space-y-4">
 
                 {/* Title */}
-
                 <input
                   type="text"
                   placeholder="Enter task title..."
@@ -167,7 +136,6 @@ const Header = ({ sideBarOpen }) => {
                 />
 
                 {/* Date */}
-
                 <input
                   type="date"
                   min={new Date().toJSON().slice(0, 10)}
@@ -193,7 +161,7 @@ const Header = ({ sideBarOpen }) => {
                 </button>
 
               </div>
-            ) :
+            ) : (
               <div className="space-y-4">
 
                 {/* Title */}
@@ -209,21 +177,29 @@ const Header = ({ sideBarOpen }) => {
                     }))
                   }
                 />
-                <div className="flex gap-2">
 
-                  <button className="w-1/2 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600" disabled={!formData.title} onClick={() => handleDailySubmit("today")}>
+                <div className="flex gap-2">
+                  <button
+                    className="w-1/2 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+                    disabled={!formData.title}
+                    onClick={() => handleDailySubmit("today")}
+                  >
                     Today
                   </button>
 
-                  <button className="w-1/2 bg-white border border-gray-300 py-2 rounded-lg hover:bg-gray-50" disabled={!formData.title} onClick={() => handleDailySubmit("tomorrow")}>
+                  <button
+                    className="w-1/2 bg-white border border-gray-300 py-2 rounded-lg hover:bg-gray-50"
+                    disabled={!formData.title}
+                    onClick={() => handleDailySubmit("tomorrow")}
+                  >
                     Tomorrow
                   </button>
-
                 </div>
+
               </div>
-            }
+            )}
           </div>
-        </div >
+        </div>
       )}
     </>
   );

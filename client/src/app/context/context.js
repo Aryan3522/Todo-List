@@ -1,191 +1,103 @@
 "use client";
-const { createContext, useReducer } = require("react");
-
-let toDoArr = {};
-if (typeof window !== "undefined") {
-  toDoArr = JSON.parse(localStorage.getItem("toDo230")) || {
-    today: [],
-    previous: [],
-    tomorrow: [],
-  };
-  const date = new Date();
-  if (toDoArr.today[0] !== undefined) {
-    if (toDoArr.today[0].year < date.getFullYear()) {
-      const prev = toDoArr.previous;
-      let today = toDoArr.today;
-      today = today.filter((ele) => {
-        if (!ele.completed) return ele;
-      });
-      toDoArr.previous = [...prev, ...today];
-      toDoArr.today = [];
-    } else {
-      if (toDoArr.today[0].month < date.getMonth()) {
-        const prev = toDoArr.previous;
-        let today = toDoArr.today;
-        today = today.filter((ele) => {
-          if (!ele.completed) return ele;
-        });
-        toDoArr.previous = [...prev, ...today];
-        toDoArr.today = [];
-      } else {
-        if (toDoArr.today[0].day < date.getDate()) {
-          const prev = toDoArr.previous;
-          let today = toDoArr.today;
-          today = today.filter((ele) => {
-            if (!ele.completed) return ele;
-          });
-          toDoArr.previous = [...prev, ...today];
-          toDoArr.today = [];
-        }
-      }
-    }
-  }
-
-  if (toDoArr.tomorrow[0] !== undefined) {
-    const date = new Date();
-    if (toDoArr.tomorrow[0].day == date.getDate()) {
-      toDoArr.today = toDoArr.tomorrow;
-      toDoArr.tomorrow = [];
-    } else if (toDoArr.tomorrow[0].year < date.getFullYear()) {
-      if (toDoArr.tomorrow[0].month < date.getMonth()) {
-        toDoArr.today = [];
-        const prev = toDoArr.previous;
-        toDoArr.previous = [...prev, ...toDoArr.tomorrow];
-        toDoArr.tomorrow = [];
-      } else {
-        if (toDoArr.tomorrow[0].day < date.getDate()) {
-          toDoArr.today = [];
-          const prev = toDoArr.previous;
-          toDoArr.previous = [...prev, ...toDoArr.tomorrow];
-          toDoArr.tomorrow = [];
-        }
-      }
-    }
-  }
-  localStorage.setItem("toDo230", JSON.stringify(toDoArr));
-} else {
-  toDoArr = { today: [], previous: [], tomorrow: [] };
-}
+import { createContext, useReducer, useEffect } from "react";
 
 export const DailyContext = createContext();
 
+const API = "http://localhost:5000/api/tasks";
+
+const initialState = {
+  today: [],
+  tomorrow: [],
+  previous: [],
+};
+
 function reducer(state, action) {
-  try {
-    switch (action.type) {
-      case "ADD_TASK_TODAY":
-        const newState = { ...state, today: [...state.today, action.payload] };
-        localStorage.setItem("toDo230", JSON.stringify(newState));
-        return newState;
-      case "ADD_TASK_TOMORROW":
-        const newState1 = {
-          ...state,
-          tomorrow: [...state.tomorrow, action.payload],
-        };
-        localStorage.setItem("toDo230", JSON.stringify(newState1));
-        return newState1;
-      case "MOVE_TASK": {
-        const { from, to, index } = action.payload;
+  switch (action.type) {
+    case "SET_TASKS":
+      return action.payload;
 
-        const newState = { ...state };
+    case "ADD_TASK":
+      return action.payload;
 
-        const fromArr = [...newState[from]];
-        const task = { ...fromArr[index] };
+    case "MOVE_TASK":
+      return action.payload;
 
-        // remove from original array
-        fromArr.splice(index, 1);
+    case "DELETE_TASK":
+      return action.payload;
 
-        // update task date depending on destination
-        const date = new Date();
+    case "COMPLETE_TASK":
+      return action.payload;
 
-        if (to === "today") {
-          task.day = date.getDate();
-          task.month = date.getMonth();
-          task.year = date.getFullYear();
-        }
-
-        if (to === "tomorrow") {
-          const tomorrow = new Date();
-          tomorrow.setDate(tomorrow.getDate() + 1);
-
-          task.day = tomorrow.getDate();
-          task.month = tomorrow.getMonth();
-          task.year = tomorrow.getFullYear();
-        }
-
-        if (to === "previous") {
-          const prev = new Date();
-          prev.setDate(prev.getDate() - 1);
-
-          task.day = prev.getDate();
-          task.month = prev.getMonth();
-          task.year = prev.getFullYear();
-        }
-
-        const toArr = [...newState[to], task];
-
-        const updatedState = {
-          ...newState,
-          [from]: fromArr,
-          [to]: toArr,
-        };
-
-        localStorage.setItem("toDo230", JSON.stringify(updatedState));
-
-        return updatedState;
-      }
-      case "DELETE":
-        let newState3 = state;
-        if (action.payload.comingFrom == "previous") {
-          let prev = state.previous;
-          prev = prev.filter((ele, i) => {
-            if (i != action.payload.index) return ele;
-          });
-          newState3 = { ...newState3, previous: prev };
-        } else if (action.payload.comingFrom == "today") {
-          let today = state.today;
-          today = today.filter((ele, i) => {
-            if (i != action.payload.index) return ele;
-          });
-          newState3 = { ...newState3, today: today };
-        } else {
-          let tomorrow = state.tomorrow;
-          tomorrow = tomorrow.filter((ele, i) => {
-            if (i != action.payload.index) return ele;
-          });
-          newState3 = { ...newState3, tomorrow: tomorrow };
-        }
-        localStorage.setItem("toDo230", JSON.stringify(newState3));
-        return newState3;
-      case "TASK_COMPLETED":
-        let newState4 = state;
-
-        if (action.payload.comingFrom == "previous") {
-          const previous = state.previous;
-          previous[action.payload.index].completed = true;
-          newState4 = { ...newState4, previous: previous };
-        } else if (action.payload.comingFrom == "today") {
-          const today = state.today;
-          today[action.payload.index].completed = true;
-          newState4 = { ...newState4, today: today };
-        } else if (action.payload.comingFrom == "tomorrow") {
-          const tomorrow = state.tomorrow;
-          tomorrow[action.payload.index].completed = true;
-          newState4 = { ...newState4, tomorrow: tomorrow };
-        }
-        localStorage.setItem("toDo230", JSON.stringify(newState4));
-        return newState4;
-      default:
-        return state;
-    }
-  } catch (error) {
-    console.log(error);
+    default:
+      return state;
   }
 }
 
 export const Provider = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, toDoArr);
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  // 🔥 Fetch all tasks initially
+  const fetchTasks = async () => {
+    const res = await fetch(API);
+    const data = await res.json();
+    dispatch({ type: "SET_TASKS", payload: data });
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  // ✅ ADD TASK
+  const addTask = async (title, category) => {
+    await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, category }),
+    });
+
+    fetchTasks();
+  };
+
+  // ✅ MOVE TASK
+  const moveTask = async (id, category) => {
+    await fetch(`${API}/${id}/move`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category }),
+    });
+
+    fetchTasks();
+  };
+
+  // ✅ DELETE
+  const deleteTask = async (id) => {
+    await fetch(`${API}/${id}`, {
+      method: "DELETE",
+    });
+
+    fetchTasks();
+  };
+
+  // ✅ COMPLETE
+  const completeTask = async (id) => {
+    await fetch(`${API}/${id}/complete`, {
+      method: "PATCH",
+    });
+
+    fetchTasks();
+  };
+
   return (
-    <DailyContext.Provider value={{ toDoArr: state, dispatch }}>
+    <DailyContext.Provider
+      value={{
+        toDoArr: state,
+        dispatch, // optional now
+        addTask,
+        moveTask,
+        deleteTask,
+        completeTask,
+      }}
+    >
       {children}
     </DailyContext.Provider>
   );

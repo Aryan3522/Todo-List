@@ -1,130 +1,21 @@
 "use client";
-const { createContext, useReducer } = require("react");
-
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-let MonthlyPlanner = {};
-if (typeof window !== "undefined") {
-  MonthlyPlanner = JSON.parse(localStorage.getItem("toDo230Monthly")) || {};
-}
+import { createContext, useReducer, useEffect } from "react";
 
 export const MonthlyContext = createContext();
 
+const API = "http://localhost:5000/api/monthly";
+
+const months = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
+];
+
+const initialState = {};
+
 function reducer(state, action) {
   switch (action.type) {
-    /* ADD PLAN */
-
-    case "ADD_PLAN": {
-      const newState = { ...state };
-      const month = parseInt(action.payload.month);
-
-      const newTask = {
-        ...action.payload,
-        inProgress: false,
-        completed: false,
-      };
-
-      if (newState[month]) {
-        newState[month] = [...newState[month], newTask];
-      } else {
-        newState[month] = [newTask];
-      }
-
-      localStorage.setItem("toDo230Monthly", JSON.stringify(newState));
-      return newState;
-    }
-
-    /* DELETE PLAN */
-
-    case "DELETE_PLAN": {
-      const newState = { ...state };
-
-      const temp = newState[action.payload.monthInd].filter((ele, i) => {
-        return action.payload.taskInd !== i;
-      });
-
-      if (temp.length > 0) newState[action.payload.monthInd] = temp;
-      else delete newState[action.payload.monthInd];
-
-      localStorage.setItem("toDo230Monthly", JSON.stringify(newState));
-      return newState;
-    }
-
-    /* MOVE TASK TO IN PROGRESS */
-
-    case "TASK_PROGRESS": {
-      const { month, index } = action.payload;
-      const newState = { ...state };
-
-      const monthTasks = [...(newState[month] || [])];
-
-      monthTasks[index] = {
-        ...monthTasks[index],
-        inProgress: true,
-        completed: false,
-      };
-
-      newState[month] = monthTasks;
-
-      localStorage.setItem("toDo230Monthly", JSON.stringify(newState));
-
-      return newState;
-    }
-
-    // Stop progress
-    case "MOVE_TO_TODO": {
-      const { month, index } = action.payload;
-
-      const newState = { ...state };
-
-      const monthTasks = [...(newState[month] || [])];
-
-      monthTasks[index] = {
-        ...monthTasks[index],
-        inProgress: false,
-        completed: false,
-      };
-
-      newState[month] = monthTasks;
-
-      localStorage.setItem("toDo230Monthly", JSON.stringify(newState));
-
-      return newState;
-    }
-
-    /* COMPLETE TASK */
-
-    case "TASK_COMPLETED": {
-      const { month, index } = action.payload;
-      const newState = { ...state };
-
-      const monthTasks = [...(newState[month] || [])];
-
-      monthTasks[index] = {
-        ...monthTasks[index],
-        completed: true,
-        inProgress: false,
-      };
-
-      newState[month] = monthTasks;
-
-      localStorage.setItem("toDo230Monthly", JSON.stringify(newState));
-
-      return newState;
-    }
+    case "SET_PLANS":
+      return action.payload;
 
     default:
       return state;
@@ -132,10 +23,80 @@ function reducer(state, action) {
 }
 
 export const MonthlyProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, MonthlyPlanner);
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  // 🔥 Fetch all plans
+  const fetchPlans = async () => {
+    const res = await fetch(API);
+    const data = await res.json();
+    dispatch({ type: "SET_PLANS", payload: data });
+  };
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  // ✅ ADD PLAN
+  const addPlan = async (title, month) => {
+    await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title, month }),
+    });
+
+    fetchPlans();
+  };
+
+  // ✅ DELETE PLAN
+  const deletePlan = async (id) => {
+    await fetch(`${API}/${id}`, {
+      method: "DELETE",
+    });
+
+    fetchPlans();
+  };
+
+  // ✅ SET IN PROGRESS
+  const setProgress = async (id) => {
+    await fetch(`${API}/${id}/progress`, {
+      method: "PATCH",
+    });
+
+    fetchPlans();
+  };
+
+  // ✅ MOVE BACK TO TODO
+  const moveToTodo = async (id) => {
+    await fetch(`${API}/${id}/todo`, {
+      method: "PATCH",
+    });
+
+    fetchPlans();
+  };
+
+  // ✅ COMPLETE TASK
+  const completeTask = async (id) => {
+    await fetch(`${API}/${id}/complete`, {
+      method: "PATCH",
+    });
+
+    fetchPlans();
+  };
 
   return (
-    <MonthlyContext.Provider value={{ Planning: state, dispatch, months }}>
+    <MonthlyContext.Provider
+      value={{
+        Planning: state,
+        months,
+        addPlan,
+        deletePlan,
+        setProgress,
+        moveToTodo,
+        completeTask,
+      }}
+    >
       {children}
     </MonthlyContext.Provider>
   );

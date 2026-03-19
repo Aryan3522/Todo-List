@@ -2,38 +2,32 @@
 
 import { DailyContext } from "@/app/context/context";
 import React, { useContext, useState } from "react";
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 export const Tomorrow = () => {
-  const { toDoArr, dispatch } = useContext(DailyContext);
-  const today = new Date();
+  const { toDoArr, moveTask, deleteTask, completeTask } =
+    useContext(DailyContext);
 
+  const today = new Date();
   const [activeMoveIndex, setActiveMoveIndex] = useState(null);
 
   const tomorrowTasks = (toDoArr?.tomorrow || []).filter((ele) => {
+    const taskDate = new Date(ele.date);
+
     return (
-      ele.year > today.getFullYear() ||
-      (ele.year === today.getFullYear() && ele.month > today.getMonth()) ||
-      (ele.year === today.getFullYear() &&
-        ele.month === today.getMonth() &&
-        ele.day > today.getDate())
+      taskDate.getFullYear() > today.getFullYear() ||
+      (taskDate.getFullYear() === today.getFullYear() &&
+        taskDate.getMonth() > today.getMonth()) ||
+      (taskDate.getFullYear() === today.getFullYear() &&
+        taskDate.getMonth() === today.getMonth() &&
+        taskDate.getDate() > today.getDate())
     );
   });
-  const TaskCompleted = (i) => {
-    dispatch({
-      type: "TASK_COMPLETED",
-      payload: {
-        index: i,
-        comingFrom: "tomorrow",
-      },
-    })
-  }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 h-full">
 
       {/* Header */}
-
       <div className="px-4 py-3 border-b bg-[#D1FAE5] rounded-t-2xl">
         <h6 className="text-sm font-semibold text-[#047857]">
           Tomorrow Tasks
@@ -41,7 +35,6 @@ export const Tomorrow = () => {
       </div>
 
       {/* Body */}
-
       <div className="p-2">
 
         {tomorrowTasks.length === 0 ? (
@@ -53,12 +46,11 @@ export const Tomorrow = () => {
 
             {tomorrowTasks.map((ele, i) => (
               <li
-                key={i}
+                key={ele._id}   // 🔥 use _id
                 className="bg-white border border-gray-100 rounded-lg p-3 shadow-sm hover:shadow transition relative"
               >
 
                 {/* Task Row */}
-
                 <div className="flex items-center justify-between">
 
                   <div className="flex items-center gap-3">
@@ -66,26 +58,28 @@ export const Tomorrow = () => {
                     <input
                       type="checkbox"
                       checked={ele.completed === true}
-                      onChange={() => TaskCompleted(i)}
+                      onChange={() => completeTask(ele._id)}
                       className="w-4 h-4 accent-green-500 cursor-pointer"
                     />
 
-                    <span className={`text-sm font-medium ${ele.completed
-                      ? "line-through text-gray-400"
-                      : "text-gray-800"
-                      }`}>
+                    <span
+                      className={`text-sm font-medium ${
+                        ele.completed
+                          ? "line-through text-gray-400"
+                          : "text-gray-800"
+                      }`}
+                    >
                       {ele.title}
                     </span>
                   </div>
 
                   <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                    {ele.day}/{ele.month + 1}/{ele.year}
+                    {new Date(ele.date).toLocaleDateString()}
                   </span>
 
                 </div>
 
                 {/* Buttons */}
-
                 <div className="flex gap-2 justify-between mt-3">
 
                   <div className="relative">
@@ -105,14 +99,7 @@ export const Tomorrow = () => {
                         <button
                           className="text-xs px-2 py-1 bg-[#EAD9B8] text-[#6B4F2A] rounded hover:bg-[#E2CEA6] transition"
                           onClick={() => {
-                            dispatch({
-                              type: "MOVE_TASK",
-                              payload: {
-                                from: "tomorrow",
-                                to: "previous",
-                                index: i,
-                              },
-                            });
+                            moveTask(ele._id, "previous");
                             setActiveMoveIndex(null);
                           }}
                         >
@@ -122,14 +109,7 @@ export const Tomorrow = () => {
                         <button
                           className="text-xs px-2 py-1 bg-[#D7DDFF] text-[#3730A3] rounded hover:bg-[#C4CCFF] transition"
                           onClick={() => {
-                            dispatch({
-                              type: "MOVE_TASK",
-                              payload: {
-                                from: "tomorrow",
-                                to: "today",
-                                index: i,
-                              },
-                            });
+                            moveTask(ele._id, "today");
                             setActiveMoveIndex(null);
                           }}
                         >
@@ -140,17 +120,10 @@ export const Tomorrow = () => {
                     )}
 
                   </div>
+
                   <button
                     className="text-xs p-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition"
-                    onClick={() =>
-                      dispatch({
-                        type: "DELETE",
-                        payload: {
-                          index: i,
-                          comingFrom: "tomorrow",
-                        },
-                      })
-                    }
+                    onClick={() => deleteTask(ele._id)}
                   >
                     <DeleteOutlineIcon fontSize="small" />
                   </button>

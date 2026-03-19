@@ -8,17 +8,14 @@ const Page = () => {
 
   return (
     <div className="min-h-[90vh] flex items-center justify-center px-6">
-
       <div className="max-w-xl text-center">
 
         {/* Heading */}
-
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
           Welcome to Todo Planner
         </h1>
 
         {/* Description */}
-
         <p className="text-gray-500 mb-8 leading-relaxed">
           A simple productivity tool to organize your tasks efficiently.
           Track your daily todos, plan upcoming events, and stay focused on
@@ -26,7 +23,6 @@ const Page = () => {
         </p>
 
         {/* Buttons */}
-
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
 
           <button
@@ -51,9 +47,7 @@ const Page = () => {
           </button>
 
         </div>
-
       </div>
-
     </div>
   );
 };

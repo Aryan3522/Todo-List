@@ -16,13 +16,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Base route
-app.use("/api", (req, res) => {
+
+app.use("/api/tasks", require("./routes/taskRoutes"));
+app.use("/api/monthly", require("./routes/monthlyRoutes"));
+
+app.get("/api", (req, res) => {
   res.json({ status: "API running" });
 });
-
-// Task routes
-app.use("/api/tasks", require("./routes/taskRoutes"));
 
 // Server
 const PORT = process.env.PORT || 5000;

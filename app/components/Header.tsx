@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { usePathname } from "next/navigation";
@@ -35,8 +35,21 @@ export default function Header({ sideBarOpen }: HeaderProps) {
   const { dispatch: monthlyDispatch } = monthlyCtx;
   const { dispatch: dailyDispatch } = dailyCtx;
 
-  const [open, setOpen] = useState<boolean>(false);
+  const [modalType, setModalType] = useState<"add" | "search" | null>(null);
+  const openAddModal = () => setModalType("add");
+  const openSearchModal = () => setModalType("search");
+  const closeModal = () => setModalType(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
 
+  const filteredTasks = [];
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 400); // 400ms debounce
+
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
   const [formData, setFormData] = useState<FormData>({
     title: "",
     date: 0,
@@ -66,7 +79,7 @@ export default function Header({ sideBarOpen }: HeaderProps) {
       year: 0,
     });
 
-    setOpen(false);
+    closeModal();
   };
 
   const handleDailySubmit = (time: "today" | "tomorrow") => {
@@ -105,7 +118,7 @@ export default function Header({ sideBarOpen }: HeaderProps) {
       year: 0,
     });
 
-    setOpen(false);
+    closeModal();
   };
 
   // ---------------- UI ----------------
@@ -131,12 +144,15 @@ export default function Header({ sideBarOpen }: HeaderProps) {
 
         {/* RIGHT */}
         <div className="flex items-center gap-3">
-          <button className="w-9 h-9 flex items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 transition">
+          <button
+            onClick={openSearchModal}
+            className="w-9 h-9 flex items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 transition"
+          >
             <SearchIcon fontSize="small" />
           </button>
 
           <button
-            onClick={() => setOpen(true)}
+            onClick={openAddModal}
             className="px-4 py-2 text-sm font-medium bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
           >
             + Add Task
@@ -145,97 +161,127 @@ export default function Header({ sideBarOpen }: HeaderProps) {
       </header>
 
       {/* MODAL */}
-      {open && (
+      {modalType && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl w-full max-w-md shadow-lg p-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-gray-800">
-                {isMonthly ? "Add Monthly Task" : "Add Daily Task"}
+                {modalType === "search" && "Search Todos"}
+                {modalType === "add" &&
+                  (isMonthly ? "Add Monthly Task" : "Add Daily Task")}
               </h2>
 
               <button
-                onClick={() => setOpen(false)}
+                onClick={closeModal}
                 className="text-gray-500 hover:text-black"
               >
                 <CloseIcon />
               </button>
             </div>
 
-            {/* FORM */}
-            {isMonthly ? (
+            {modalType === "search" && (
               <div className="space-y-4">
                 <input
                   type="text"
-                  placeholder="Enter task title..."
-                  value={formData.title}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      title: e.target.value,
-                    }))
-                  }
+                  placeholder="Search tasks..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
                 />
 
-                <input
-                  type="date"
-                  min={new Date().toJSON().slice(0, 10)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                  onChange={(e) => {
-                    const aux = e.target.value.split("-");
-
-                    setFormData((prev) => ({
-                      ...prev,
-                      date: Number(aux[2]),
-                      month: Number(aux[1]),
-                      year: Number(aux[0]),
-                    }));
-                  }}
-                />
-
-                <button
-                  disabled={!(formData.title && formData.date)}
-                  onClick={handleSubmit}
-                  className="w-full bg-green-500 text-white py-2 rounded-lg"
-                >
-                  Add Task
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Enter task title..."
-                  value={formData.title}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      title: e.target.value,
-                    }))
-                  }
-                />
-
-                <div className="flex gap-2">
-                  <button
-                    className="w-1/2 bg-green-500 text-white py-2 rounded-lg"
-                    disabled={!formData.title}
-                    onClick={() => handleDailySubmit("today")}
-                  >
-                    Today
-                  </button>
-
-                  <button
-                    className="w-1/2 bg-white border border-gray-300 py-2 rounded-lg"
-                    disabled={!formData.title}
-                    onClick={() => handleDailySubmit("tomorrow")}
-                  >
-                    Tomorrow
-                  </button>
+                <div className="max-h-60 overflow-y-auto">
+                  {filteredTasks.length > 0 ? (
+                    filteredTasks.map((task: any, index: number) => (
+                      <div
+                        key={index}
+                        className="p-2 border-b text-sm text-gray-700"
+                      >
+                        {task.title}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500">No results found</p>
+                  )}
                 </div>
               </div>
             )}
+
+            {/* Modal Type Add task */}
+            {modalType === "add" &&
+              (isMonthly ? (
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Enter task title..."
+                    value={formData.title}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                  />
+
+                  <input
+                    type="date"
+                    min={new Date().toJSON().slice(0, 10)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    onChange={(e) => {
+                      const aux = e.target.value.split("-");
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        date: Number(aux[2]),
+                        month: Number(aux[1]),
+                        year: Number(aux[0]),
+                      }));
+                    }}
+                  />
+
+                  <button
+                    disabled={!(formData.title && formData.date)}
+                    onClick={handleSubmit}
+                    className="w-full bg-green-500 text-white py-2 rounded-lg"
+                  >
+                    Add Task
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Enter task title..."
+                    value={formData.title}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                  />
+
+                  <div className="flex gap-2">
+                    <button
+                      className="w-1/2 bg-green-500 text-white py-2 rounded-lg"
+                      disabled={!formData.title}
+                      onClick={() => handleDailySubmit("today")}
+                    >
+                      Today
+                    </button>
+
+                    <button
+                      className="w-1/2 bg-white border border-gray-300 py-2 rounded-lg"
+                      disabled={!formData.title}
+                      onClick={() => handleDailySubmit("tomorrow")}
+                    >
+                      Tomorrow
+                    </button>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       )}

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Provider } from "./context/context";
 import { MonthlyProvider } from "./context/monthlyContext";
+import { SearchProvider } from "./context/SearchContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en">
       <body className={inter.className}>
         <MonthlyProvider>
-          <Provider>{children}</Provider>
+          <Provider>
+            <SearchProvider>{children}</SearchProvider>
+          </Provider>
         </MonthlyProvider>
       </body>
     </html>

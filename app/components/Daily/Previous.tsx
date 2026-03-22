@@ -3,12 +3,15 @@
 import { useContext, useState, useEffect } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { DailyContext, Task } from "../../context/context";
+import { SearchContext } from "../../context/SearchContext";
 
 // ✅ Task type
 type TaskItem = Task;
 
 export function Previous() {
   const ctx = useContext(DailyContext);
+  const searchCtx = useContext(SearchContext);
+  const searchQuery = searchCtx?.searchQuery.toLowerCase() || "";
 
   if (!ctx) return null;
 
@@ -27,14 +30,19 @@ export function Previous() {
     ? (toDoArr?.previous || []).filter((ele) => {
         return (
           ele.year < today.getFullYear() ||
-          (ele.year === today.getFullYear() &&
-            ele.month < today.getMonth()) ||
+          (ele.year === today.getFullYear() && ele.month < today.getMonth()) ||
           (ele.year === today.getFullYear() &&
             ele.month === today.getMonth() &&
             ele.day < today.getDate())
         );
       })
     : [];
+
+  const filteredTasks = searchQuery
+    ? previousTasks.filter((task) =>
+        task.title.toLowerCase().includes(searchQuery),
+      )
+    : previousTasks;
 
   const TaskCompleted = (i: number) => {
     dispatch({
@@ -60,9 +68,7 @@ export function Previous() {
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 h-full">
       {/* Header */}
       <div className="px-4 py-3 border-b bg-[#EAD9B8] rounded-t-lg">
-        <h6 className="text-sm font-semibold text-[#6B4F2A]">
-          Previous Tasks
-        </h6>
+        <h6 className="text-sm font-semibold text-[#6B4F2A]">Previous Tasks</h6>
       </div>
 
       {/* Body */}
@@ -73,7 +79,7 @@ export function Previous() {
           </p>
         ) : (
           <ul className="space-y-2">
-            {previousTasks.map((ele, i) => (
+            {filteredTasks.map((ele, i) => (
               <li
                 key={`${ele.year}-${ele.month}-${ele.day}-${i}`}
                 className="bg-white border border-gray-100 rounded-md p-3 shadow-sm hover:shadow transition relative"

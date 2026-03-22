@@ -6,6 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { usePathname } from "next/navigation";
 import { MonthlyContext } from "../context/monthlyContext";
 import { DailyContext } from "../context/context";
+import { SearchContext } from "../context/SearchContext";
 
 // ✅ Props
 type HeaderProps = {
@@ -39,17 +40,25 @@ export default function Header({ sideBarOpen }: HeaderProps) {
   const openAddModal = () => setModalType("add");
   const openSearchModal = () => setModalType("search");
   const closeModal = () => setModalType(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const searchCtx = useContext(SearchContext);
 
-  const filteredTasks = [];
+  if (!searchCtx) {
+    throw new Error("SearchContext not found");
+  }
+
+  const { searchQuery, setSearchQuery } = searchCtx;
+
+  // debounce
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 400); // 400ms debounce
+      setSearchQuery(localQuery);
+    }, 800);
 
     return () => clearTimeout(handler);
-  }, [searchQuery]);
+  }, [localQuery]);
+
   const [formData, setFormData] = useState<FormData>({
     title: "",
     date: 0,
@@ -185,12 +194,12 @@ export default function Header({ sideBarOpen }: HeaderProps) {
                 <input
                   type="text"
                   placeholder="Search tasks..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={localQuery}
+                  onChange={(e) => setLocalQuery(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2"
                 />
 
-                <div className="max-h-60 overflow-y-auto">
+                {/* <div className="max-h-60 overflow-y-auto">
                   {filteredTasks.length > 0 ? (
                     filteredTasks.map((task: any, index: number) => (
                       <div
@@ -203,7 +212,10 @@ export default function Header({ sideBarOpen }: HeaderProps) {
                   ) : (
                     <p className="text-sm text-gray-500">No results found</p>
                   )}
-                </div>
+                </div> */}
+                <p className="text-sm text-gray-500">
+                  Start typing to search tasks...
+                </p>
               </div>
             )}
 

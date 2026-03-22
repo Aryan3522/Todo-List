@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { MonthlyContext, MonthlyTask } from "../../context/monthlyContext";
+import { SearchContext } from "../../context/SearchContext";
 
 const columnStyles = {
   todo: "bg-[#f6eddc]",
@@ -19,6 +20,8 @@ type TaskWithMeta = MonthlyTask & {
 
 export default function Main() {
   const ctx = useContext(MonthlyContext);
+  const searchCtx = useContext(SearchContext);
+  const searchQuery = searchCtx?.searchQuery.toLowerCase() || "";
 
   // ✅ FIX 1: context safety
   if (!ctx) return null;
@@ -46,6 +49,11 @@ export default function Main() {
 
   upcomingMonths.forEach((month) => {
     Planning[month].forEach((task, index) => {
+      // APPLY SEARCH FILTER HERE
+      if (searchQuery && !task.title.toLowerCase().includes(searchQuery)) {
+        return;
+      }
+
       const item: TaskWithMeta = { ...task, month, index };
 
       if (task.completed) completed.push(item);
@@ -91,7 +99,7 @@ export default function Main() {
 
   const renderCard = (
     task: TaskWithMeta,
-    type: "todo" | "progress" | "completed"
+    type: "todo" | "progress" | "completed",
   ) => (
     <div
       key={`${task.month}-${task.index}`}
@@ -101,29 +109,24 @@ export default function Main() {
         <div className="flex gap-2 items-center">
           <h4
             className={`text-md font-semibold ${
-              task.completed
-                ? "line-through text-gray-400"
-                : "text-gray-800"
+              task.completed ? "line-through text-gray-400" : "text-gray-800"
             }`}
           >
             {task.title}
           </h4>
 
-          {type === "completed" && (
-            <CheckIcon className="text-green-600" />
-          )}
+          {type === "completed" && <CheckIcon className="text-green-600" />}
         </div>
 
         <span className="text-[14px] text-green-800">
-          {new Date(
-            task.year,
-            task.month - 1,
-            task.date
-          ).toLocaleDateString("en-US", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
+          {new Date(task.year, task.month - 1, task.date).toLocaleDateString(
+            "en-US",
+            {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            },
+          )}
         </span>
       </div>
 
@@ -174,14 +177,14 @@ export default function Main() {
       <div className="w-full flex flex-wrap gap-6">
         {/* TODO */}
         <div className={`flex-1 rounded-2xl p-6 ${columnStyles.todo}`}>
-          <h3 className="text-sm font-semibold text-yellow-700 mb-5">
-            To Do
-          </h3>
+          <h3 className="text-sm font-semibold text-yellow-700 mb-5">To Do</h3>
 
           <div className="flex flex-col gap-4">
-            {todos.length
-              ? todos.map((task) => renderCard(task, "todo"))
-              : <p className="text-xs text-gray-500">No tasks</p>}
+            {todos.length ? (
+              todos.map((task) => renderCard(task, "todo"))
+            ) : (
+              <p className="text-xs text-gray-500">No tasks</p>
+            )}
           </div>
         </div>
 
@@ -192,9 +195,11 @@ export default function Main() {
           </h3>
 
           <div className="flex flex-col gap-4">
-            {progress.length
-              ? progress.map((task) => renderCard(task, "progress"))
-              : <p className="text-xs text-gray-500">No tasks</p>}
+            {progress.length ? (
+              progress.map((task) => renderCard(task, "progress"))
+            ) : (
+              <p className="text-xs text-gray-500">No tasks</p>
+            )}
           </div>
         </div>
 
@@ -205,9 +210,11 @@ export default function Main() {
           </h3>
 
           <div className="flex flex-col gap-4">
-            {completed.length
-              ? completed.map((task) => renderCard(task, "completed"))
-              : <p className="text-xs text-gray-500">No tasks</p>}
+            {completed.length ? (
+              completed.map((task) => renderCard(task, "completed"))
+            ) : (
+              <p className="text-xs text-gray-500">No tasks</p>
+            )}
           </div>
         </div>
       </div>

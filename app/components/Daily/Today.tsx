@@ -3,12 +3,15 @@
 import { useContext, useState, useEffect } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { DailyContext, Task } from "../../context/context";
+import { SearchContext } from "../../context/SearchContext";
 
 // ✅ Task type
 type TaskItem = Task;
 
 export function Today() {
   const ctx = useContext(DailyContext);
+  const searchCtx = useContext(SearchContext);
+  const searchQuery = searchCtx?.searchQuery.toLowerCase() || "";
 
   // ✅ FIX 1: context safety
   if (!ctx) return null;
@@ -33,6 +36,12 @@ export function Today() {
         );
       })
     : [];
+
+  const filteredTasks = searchQuery
+    ? todayTasks.filter((task) =>
+        task.title.toLowerCase().includes(searchQuery),
+      )
+    : todayTasks;
 
   // ✅ FIX 3: typed handler
   const TaskCompleted = (i: number) => {
@@ -60,7 +69,7 @@ export function Today() {
           </p>
         ) : (
           <ul className="space-y-2">
-            {todayTasks.map((ele, i) => (
+            {filteredTasks.map((ele, i) => (
               <li
                 key={`${ele.year}-${ele.month}-${ele.day}-${i}`} // ✅ better key
                 className="bg-white border border-gray-100 rounded-md p-3 shadow-sm hover:shadow transition relative"

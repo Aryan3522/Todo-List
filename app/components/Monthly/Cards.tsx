@@ -3,6 +3,7 @@
 import { useContext } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { MonthlyContext } from "../../context/monthlyContext";
+import { SearchContext } from "../../context/SearchContext";
 
 // Month theme type
 type MonthTheme = {
@@ -28,6 +29,8 @@ const monthColors: Record<number, MonthTheme> = {
 
 export function Cards() {
   const ctx = useContext(MonthlyContext);
+  const searchCtx = useContext(SearchContext);
+  const searchQuery = searchCtx?.searchQuery.toLowerCase() || "";
 
   if (!ctx) {
     throw new Error("MonthlyContext not found");
@@ -44,7 +47,7 @@ export function Cards() {
   };
 
   const hasPlans = Object.values(Planning || {}).some(
-    (month) => month && month.length > 0
+    (month) => month && month.length > 0,
   );
 
   if (!hasPlans) {
@@ -81,62 +84,66 @@ export function Cards() {
 
             {/* Task List */}
             <div className="flex flex-col divide-y">
-              {Planning[monthIndex].map((plan, ind) => (
-                <div
-                  key={ind}
-                  className="flex justify-between rounded-b-md bg-white items-center px-4 py-3 hover:bg-gray-50 transition"
-                >
-                  {/* Task Info */}
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={plan.completed === true}
-                      onChange={() =>
-                        dispatch({
-                          type: "TASK_COMPLETED",
-                          payload: {
-                            month: monthIndex,
-                            index: ind,
-                          },
-                        })
-                      }
-                      className="w-4 h-4 accent-green-500 cursor-pointer"
-                    />
-
-                    <div className="flex flex-col">
-                      <span
-                        className={`text-sm font-medium ${
-                          plan.completed
-                            ? "line-through text-gray-400"
-                            : "text-gray-800"
-                        }`}
-                      >
-                        {plan.title}
-                      </span>
-
-                      <span className="text-xs text-gray-500">
-                        {new Date(
-                          Number(plan.year),
-                          Number(plan.month) - 1,
-                          Number(plan.date)
-                        ).toLocaleDateString("en-US", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Delete Button */}
-                  <button
-                    onClick={() => deleteHandler(monthIndex, ind)}
-                    className="text-xs p-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition"
+              {Planning[monthIndex]
+                .filter((plan) =>
+                  plan.title.toLowerCase().includes(searchQuery),
+                )
+                .map((plan, ind) => (
+                  <div
+                    key={ind}
+                    className="flex justify-between rounded-b-md bg-white items-center px-4 py-3 hover:bg-gray-50 transition"
                   >
-                    <DeleteOutlineIcon fontSize="small" />
-                  </button>
-                </div>
-              ))}
+                    {/* Task Info */}
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={plan.completed === true}
+                        onChange={() =>
+                          dispatch({
+                            type: "TASK_COMPLETED",
+                            payload: {
+                              month: monthIndex,
+                              index: ind,
+                            },
+                          })
+                        }
+                        className="w-4 h-4 accent-green-500 cursor-pointer"
+                      />
+
+                      <div className="flex flex-col">
+                        <span
+                          className={`text-sm font-medium ${
+                            plan.completed
+                              ? "line-through text-gray-400"
+                              : "text-gray-800"
+                          }`}
+                        >
+                          {plan.title}
+                        </span>
+
+                        <span className="text-xs text-gray-500">
+                          {new Date(
+                            Number(plan.year),
+                            Number(plan.month) - 1,
+                            Number(plan.date),
+                          ).toLocaleDateString("en-US", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => deleteHandler(monthIndex, ind)}
+                      className="text-xs p-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition"
+                    >
+                      <DeleteOutlineIcon fontSize="small" />
+                    </button>
+                  </div>
+                ))}
             </div>
           </div>
         );

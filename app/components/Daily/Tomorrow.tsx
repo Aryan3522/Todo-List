@@ -3,12 +3,15 @@
 import { useContext, useState, useEffect } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { DailyContext, Task } from "../../context/context";
+import { SearchContext } from "../../context/SearchContext";
 
 // ✅ Extend task for UI safety (optional but clean)
 type TaskItem = Task;
 
 export function Tomorrow() {
   const ctx = useContext(DailyContext);
+  const searchCtx = useContext(SearchContext);
+  const searchQuery = searchCtx?.searchQuery.toLowerCase() || "";
 
   // ✅ FIX 1: context safety
   if (!ctx) return null;
@@ -36,6 +39,12 @@ export function Tomorrow() {
       })
     : [];
 
+  const filteredTasks = searchQuery
+    ? tomorrowTasks.filter((task) =>
+        task.title.toLowerCase().includes(searchQuery),
+      )
+    : tomorrowTasks;
+
   // ✅ FIX 3: typed handler
   const TaskCompleted = (i: number) => {
     dispatch({
@@ -62,7 +71,7 @@ export function Tomorrow() {
           </p>
         ) : (
           <ul className="space-y-2">
-            {tomorrowTasks.map((ele, i) => (
+            {filteredTasks.map((ele, i) => (
               <li
                 key={i}
                 className="bg-white border border-gray-100 rounded-md p-3 shadow-sm hover:shadow transition relative"

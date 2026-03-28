@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Cards } from "./Cards";
 
-const Main = () => {
-  const [mounted, setMounted] = useState(false);
+export default function Main() {
+  const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
     setMounted(true);
@@ -14,12 +14,9 @@ const Main = () => {
 
   return (
     <div className="w-full flex justify-center py-10">
-      {/* Cards */}
       <div className="w-full">
         <Cards />
       </div>
     </div>
   );
-};
-
-export default Main;
+}

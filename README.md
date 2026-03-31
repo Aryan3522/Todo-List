@@ -74,6 +74,42 @@ http://localhost:3000
 
 ---
 
+# � Environment Variables
+
+This project uses environment variables to configure the MongoDB connection.
+
+Create a `.env.local` file in the project root with the following value:
+
+```bash
+# -----------------------------
+# 🔥 Firebase (Frontend - Public)
+# -----------------------------
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+
+# -----------------------------
+# 🔥 Firebase Admin (Backend - Secret)
+# -----------------------------
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_CLIENT_EMAIL=your_client_email
+
+# IMPORTANT: keep this in ONE LINE and wrap in quotes
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_KEY_HERE\n-----END PRIVATE KEY-----\n"
+
+
+# -----------------------------
+# 🍃 MongoDB
+# -----------------------------
+MONGODB_URI=mongodb+srv://username:password@cluster0.mongodb.net/todolist?retryWrites=true&w=majority
+```
+
+Make sure this file is not committed to version control. Next.js automatically loads `.env.local` during development.
+
+---
+
 # 📁 Project Scripts
 
 | Command         | Purpose                  |

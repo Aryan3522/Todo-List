@@ -4,9 +4,18 @@ import React, { useEffect, useState } from "react";
 import Header from "./components/Header";
 import Main from "./components/Home/Main";
 import Navbar from "./components/Navbar";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function Home(): React.JSX.Element {
   const [open, setOpen] = useState<boolean>(false);
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    console.log("User:", user); // ✅ THIS is the real value
+  });
+
+  return () => unsubscribe();
+}, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("sidebar");

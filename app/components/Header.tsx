@@ -70,10 +70,10 @@ export default function Header({ sideBarOpen }: HeaderProps) {
 
   // ---------------- HANDLERS ----------------
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.title || !formData.date) return;
 
-    monthlyDispatch({
+    await monthlyDispatch({
       type: "ADD_PLAN",
       payload: {
         ...formData,
@@ -91,7 +91,7 @@ export default function Header({ sideBarOpen }: HeaderProps) {
     closeModal();
   };
 
-  const handleDailySubmit = (time: "today" | "tomorrow") => {
+  const handleDailySubmit = async (time: "today" | "tomorrow") => {
     if (!formData.title) return;
 
     const date = new Date();
@@ -115,7 +115,7 @@ export default function Header({ sideBarOpen }: HeaderProps) {
       };
     }
 
-    dailyDispatch({
+    await dailyDispatch({
       type: time === "today" ? "ADD_TASK_TODAY" : "ADD_TASK_TOMORROW",
       payload,
     });

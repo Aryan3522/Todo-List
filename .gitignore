@@ -61,3 +61,57 @@ coverage/
 # Misc
 # -----------------------------
 *.pem
+
+# -----------------------------
+# IntelliJ / JetBrains IDEs
+# -----------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# User-specific workspace files
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+.idea/shelf/
+
+# Generated / cache files
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+
+# Editor-specific settings (optional — keep if team wants shared configs)
+.idea/codeStyles/
+.idea/inspectionProfiles/
+
+# -----------------------------
+# JetBrains Fleet (if used)
+# -----------------------------
+.fleet/
+
+# -----------------------------
+# Local History (JetBrains)
+# -----------------------------
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+
+# -----------------------------
+# IntelliJ HTTP Client
+# -----------------------------
+.httpRequests/
+
+# -----------------------------
+# Database tools
+# -----------------------------
+.idea/dataSources/
+.idea/dataSources.ids
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+
+# -----------------------------
+# Plugin-specific
+# -----------------------------
+.idea/jsLibraryMappings.xml

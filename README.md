@@ -8,17 +8,15 @@ This repository is intentionally structured to encourage **real-world collaborat
 ---
 
 # 🚀 Tech Stack
-
-| Category      | Technologies             |
-| ------------- | ------------------------ |
-| Framework     | Next.js 14               |
-| UI Library    | React 18                 |
-| Styling       | TailwindCSS              |
-| UI Components | Material UI              |
-| Icons         | Lucide React + MUI Icons |
-| Animation     | Anime.js                 |
-| Tooling       | PostCSS, Autoprefixer    |
-
+| Category      | Technologies            |
+|---------------|-------------------------|
+| Framework     | Next.js 14              |
+| UI Library    | React 18                |
+| Styling       | Tailwind CSS            |
+| UI Components | Material UI             |
+| Icons         | Lucide React, MUI Icons |
+| Animation     | Anime.js                |
+| Tooling       | PostCSS, Autoprefixer   |
 ---
 
 ## 📸 UI Preview
@@ -113,7 +111,7 @@ Make sure this file is not committed to version control. Next.js automatically l
 # 📁 Project Scripts
 
 | Command         | Purpose                  |
-| --------------- | ------------------------ |
+|-----------------|--------------------------|
 | `npm run dev`   | Runs development server  |
 | `npm run build` | Builds production bundle |
 | `npm start`     | Runs production build    |
@@ -136,9 +134,9 @@ Please read these rules carefully before submitting a pull request.
 
 If your contribution modifies the **user interface**, you must:
 
-• Include **before and after screenshots** in the Pull Request
-• Explain **what UI component was modified**
-• Describe **why the change improves the UI**
+• Include **before and after screenshots** in the Pull Request <br/>
+• Explain **what UI component was modified** <br/>
+• Describe **why the change improves the UI** <br/>
 
 Example:
 
@@ -160,9 +158,9 @@ Better visual hierarchy and improved interaction feedback
 
 If your contribution modifies **logic, state management, or APIs**, you must:
 
-• Clearly explain **what was changed**
-• Provide **usage examples**
-• Describe the **impact on application behavior**
+• Clearly explain **what was changed** <br/>
+• Provide **usage examples** <br/>
+• Describe the **impact on application behavior** <br/>
 
 Example:
 
@@ -189,11 +187,11 @@ Improves state update performance and prevents UI flickering
 
 All contributions must follow these rules:
 
-✔ Use **clean and readable code**
-✔ Follow **existing project structure**
-✔ Avoid unnecessary dependencies
-✔ Write meaningful commit messages
-✔ Test your changes before submitting a PR
+✔ Use **clean and readable code** <br/>
+✔ Follow **existing project structure** <br/>
+✔ Avoid unnecessary dependencies <br/>
+✔ Write meaningful commit messages <br/>
+✔ Test your changes before submitting a PR <br/>
 
 Pull requests that do not follow these guidelines may be rejected.
 
@@ -270,9 +268,9 @@ New Pull Request
 
 Provide:
 
-• A **clear description** of your changes
-• **Screenshots (if UI updates)**
-• **Examples (if backend updates)**
+• A **clear description** of your changes <br/>
+• **Screenshots (if UI updates)** <br/>
+• **Examples (if backend updates)** <br/>
 
 ---
 
@@ -280,11 +278,11 @@ Provide:
 
 If you are new to open source, you can start with:
 
-• UI improvements
-• Accessibility improvements
-• Performance optimizations
-• Code refactoring
-• New task management features
+• UI improvements <br/>
+• Accessibility improvements <br/>
+• Performance optimizations <br/>
+• Code refactoring <br/>
+• New task management features <br/>
 
 ---
 

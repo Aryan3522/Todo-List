@@ -103,7 +103,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_KEY_HERE\n-----END PRIVA
 # -----------------------------
 # 🍃 MongoDB
 # -----------------------------
-MONGODB_URI=mongodb+srv://username:password@cluster0.mongodb.net/todolist?retryWrites=true&w=majority
+MONGODB_URI=your_mongo_uri
 ```
 
 Make sure this file is not committed to version control. Next.js automatically loads `.env.local` during development.
